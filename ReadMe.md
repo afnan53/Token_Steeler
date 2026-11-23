@@ -1,5 +1,5 @@
-Exploiting ThrottleStop.sys: A Windows 11 25H2 BYOVD Token Stealer
-Introduction
+#Exploiting ThrottleStop.sys: A Windows 11 25H2 BYOVD Token Stealer
+#Introduction
 
 This write-up details the development of a Bring Your Own Vulnerable Driver (BYOVD) exploit targeting ThrottleStop.sys. The goal was to perform local privilege escalation from an Administrator context to NT AUTHORITY\SYSTEM on Windows 11 (Build 26200 / 25H2).
 
@@ -35,17 +35,9 @@ With the V2P map built, the exploitation chain was straightforward:
 
     Extract the Token: Read the SYSTEM token pointer from EPROCESS + 0x248.
 
-Windows 11 25H2 Offsets
 
-The traditional Windows 10/22H2 offsets (0x4b8) will crash the exploit on 25H2. I had to update the EPROCESS offsets to match the newer build:
 
-    UniqueProcessId (PID): 0x1d0
-
-    ActiveProcessLinks: 0x1d8
-
-    Token: 0x248
-
-The Final Chain
+#The Final Chain
 
 To find my own process, I walked the ActiveProcessLinks doubly-linked list starting from the SYSTEM process. Once my process's PID matched, I translated my EPROCESS to a physical address and overwrote my Token pointer with the SYSTEM token. To prevent a system crash, I carefully preserved the lower 4 bits of my old token (the reference count bits).
 
